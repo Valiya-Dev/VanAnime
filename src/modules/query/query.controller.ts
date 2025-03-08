@@ -12,10 +12,13 @@ export class QueryController {
   ) {}
 
   @Post()
-  queryFromSource(@Body() data: SearchParamDTO, @Res() res: Response): void {
+  async queryFromSource(
+    @Body() data: SearchParamDTO,
+    @Res() res: Response,
+  ): Promise<void> {
     const { source, searchContent } = data;
+    const results = await this.queryService.search(source, searchContent);
 
-    const a = 1;
-    res.status(200).json({});
+    res.status(200).json(results);
   }
 }
