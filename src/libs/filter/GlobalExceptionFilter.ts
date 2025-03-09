@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { LogService } from '../log/log.service';
 import { Response, Request } from 'express';
+import { ExceptionResponseInterface } from '../interfaces/exception-response.interface';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
@@ -24,7 +25,9 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       status = exception.getStatus();
       const exceptionResponse = exception.getResponse();
       message =
-        typeof exceptionResponse === 'string' ? exceptionResponse : 'error';
+        typeof exceptionResponse === 'string'
+          ? exceptionResponse
+          : (exceptionResponse as ExceptionResponseInterface).message;
     }
 
     this.logger.error(
