@@ -4,7 +4,7 @@ export type QueryBodyType = {
 };
 
 export type DMHYSearchContent = {
-  search?: string[];
+  search?: string | string[];
   type?: string;
   fansubName?: string | string[];
   include?: string | string[];
