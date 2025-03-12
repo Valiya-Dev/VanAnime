@@ -59,8 +59,6 @@ export class QueryService {
       for (const key of search) {
         if (fuseList.search(key).length !== 0) return false;
       }
-    } else if (typeof search === 'string') {
-      if (fuseList.search(search).length !== 0) return false;
     }
 
     if (Array.isArray(include) && include.length >= 1) {
