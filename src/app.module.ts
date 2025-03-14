@@ -9,6 +9,7 @@ import { ConfigModule } from '@nestjs/config';
 import { GlobalCacheModule } from './libs/cache/cache.module';
 import { DownloaderModule } from './modules/downloader/downloader.module';
 import { QbittorrentModule } from './libs/utils/qbittorrent/qbittorrent.module';
+import { MagnetModule } from './libs/utils/magnet/magnet.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { QbittorrentModule } from './libs/utils/qbittorrent/qbittorrent.module';
     GlobalCacheModule,
     DownloaderModule,
     QbittorrentModule,
+    MagnetModule,
   ],
   controllers: [AppController],
   providers: [AppService, LogService],
