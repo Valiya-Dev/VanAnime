@@ -9,7 +9,8 @@ export class LogService implements LoggerService {
     transports: [new transports.Console()],
   });
 
-  log(message) {
+  // Placeholder，这里允许任何type的logs，无固定type
+  log(message: unknown) {
     this.logger.info(message);
   }
 

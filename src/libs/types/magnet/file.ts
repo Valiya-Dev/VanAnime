@@ -1,6 +1,6 @@
 export interface MagnetFile {
   name: string;
-  length: string;
+  length: number;
 }
 
 export interface MagnetFileDetails {

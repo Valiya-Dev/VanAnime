@@ -1,11 +1,10 @@
 import { ResponseBase } from '../../../libs/dto/response-base.dto';
 import { SearchResult } from '../../../libs/types/query/query.search-result';
 import { ApiProperty } from '@nestjs/swagger';
-import { HttpStatusCode } from 'axios';
 
 export class QueryResponseDto extends ResponseBase {
   constructor(
-    statusCode: HttpStatusCode,
+    statusCode: number,
     success: boolean,
     queryResult: SearchResult[],
     source: string,

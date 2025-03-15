@@ -26,4 +26,10 @@ import { MagnetModule } from './libs/utils/magnet/magnet.module';
   providers: [AppService, LogService],
   exports: [GlobalCacheModule, QbittorrentModule],
 })
-export class AppModule {}
+export class AppModule {
+  async onModuleInit() {
+    const { default: WebTorrent } = await import('webtorrent');
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const client = new WebTorrent();
+  }
+}

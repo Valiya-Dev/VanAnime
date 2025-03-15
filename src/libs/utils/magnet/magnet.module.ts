@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { TorrentTransformerService } from './torrent-transformer/torrent-transformer.service';
+// import { TorrentTransformerService } from './torrent-transformer/torrent-transformer.service';
 
 @Module({
-  providers: [TorrentTransformerService],
-  exports: [TorrentTransformerService],
+  providers: [],
+  exports: [],
 })
 export class MagnetModule {}
