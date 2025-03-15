@@ -28,4 +28,10 @@ import { FileModule } from './libs/utils/file/file.module';
   providers: [AppService, LogService],
   exports: [GlobalCacheModule, QbittorrentModule],
 })
-export class AppModule {}
+export class AppModule {
+  async onModuleInit() {
+    const { default: WebTorrent } = await import('webtorrent');
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const client = new WebTorrent();
+  }
+}
