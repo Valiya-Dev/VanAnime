@@ -1,13 +1,14 @@
-import { Injectable, LoggerService } from '@nestjs/common';
-// import WebTorrent, { Torrent } from 'webtorrent';
+import { Inject, Injectable } from '@nestjs/common';
 
-// import fs from 'fs';
-// import { MagnetFile, MagnetFileDetails } from '../../../types/magnet/file';
+import * as fs from 'fs';
+import { MagnetFile, MagnetFileDetails } from '../../../types/magnet/file';
+import * as process from 'node:process';
+import * as path from 'path';
+
 // import parseTorrent from 'parse-torrent';
 
 @Injectable()
 export class TorrentTransformerService {
-  // private client: WebTorrent.Instance;
   private readonly trackerList = [
     'udp://104.143.10.186:8000/announce',
     'http://tracker.openbittorrent.com:80/announce',
@@ -16,34 +17,37 @@ export class TorrentTransformerService {
     'http://tracker.publicbt.com:80/announce',
   ];
 
-  constructor(private readonly loggerService: LoggerService) {
-    // this.client = new WebTorrent();
+  constructor(
+    @Inject('package:webtorrent')
+    private readonly Webtorrent: typeof import('webtorrent'),
+  ) {}
+
+  addMagnet(magnet: string) {
+    return new Promise((resolve, reject) => {
+      const client = new this.Webtorrent();
+      client.add(magnet, { announce: this.trackerList }, (torrent) => {
+        const filesList: MagnetFile[] = torrent.files?.map((file) => ({
+          name: file.name,
+          length: file.length,
+        }));
+
+        fs.writeFileSync(
+          path.join(
+            process.cwd(),
+            `/src/files/torrents/${torrent.name}.torrent`,
+          ),
+          torrent.torrentFile,
+        );
+
+        client.destroy();
+
+        resolve({
+          filesList,
+          name: torrent.name,
+        });
+      });
+    });
   }
-
-  // addMagnet(magnet: string) {
-  //   this.client.add(
-  //     magnet,
-  //     { announce: this.trackerList },
-  //     (torrent: Torrent) => {
-  //       const filesList: MagnetFile[] = torrent.files?.map((file) => ({
-  //         name: file.name,
-  //         length: file.length,
-  //       }));
-
-  //       fs.writeFileSync(
-  //         `/files/torrents/${torrent.name}.torrent`,
-  //         torrent.torrentFile,
-  //       );
-
-  //       this.client.destroy();
-
-  //       return {
-  //         filesList,
-  //         name: torrent.name,
-  //       };
-  //     },
-  //   );
-  // }
 
   // filterTorrent(magnetFileDetails: MagnetFileDetails) {
   //   const { torrentName } = magnetFileDetails;
