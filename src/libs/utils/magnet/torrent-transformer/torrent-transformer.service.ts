@@ -1,11 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 
 import * as fs from 'fs';
-import { MagnetFile, MagnetFileDetails } from '../../../types/magnet/file';
+import { MagnetFile } from '../../../types/magnet/file';
 import * as process from 'node:process';
 import * as path from 'path';
-
-// import parseTorrent from 'parse-torrent';
+import { ConfigService } from '@nestjs/config';
+import { LogService } from '../../../log/log.service';
+import { WebTorrentParseException } from '../../../exceptions/magnet/WebTorrentParseException';
 
 @Injectable()
 export class TorrentTransformerService {
@@ -20,41 +21,43 @@ export class TorrentTransformerService {
   constructor(
     @Inject('package:webtorrent')
     private readonly Webtorrent: typeof import('webtorrent'),
+    private readonly configService: ConfigService,
+    private readonly logService: LogService,
   ) {}
 
-  addMagnet(magnet: string) {
-    return new Promise((resolve, reject) => {
+  parseMagnet(magnet: string) {
+    return new Promise((resolve) => {
       const client = new this.Webtorrent();
-      client.add(magnet, { announce: this.trackerList }, (torrent) => {
-        const filesList: MagnetFile[] = torrent.files?.map((file) => ({
-          name: file.name,
-          length: file.length,
-        }));
 
-        fs.writeFileSync(
-          path.join(
-            process.cwd(),
-            `/src/files/torrents/${torrent.name}.torrent`,
-          ),
-          torrent.torrentFile,
-        );
+      try {
+        client.add(magnet, { announce: this.trackerList }, (torrent) => {
+          const filesList: MagnetFile[] = torrent.files?.map((file) => ({
+            name: file.name,
+            length: file.length,
+          }));
 
-        client.destroy();
+          fs.writeFileSync(
+            path.join(
+              process.cwd(),
+              `${this.configService.get<string>('TORRENT_FILE_PATH')}/${torrent.name}.torrent`,
+            ),
+            torrent.torrentFile,
+          );
 
-        resolve({
-          filesList,
-          name: torrent.name,
+          client.destroy();
+
+          resolve({
+            filesList,
+            name: torrent.name,
+            infoHash: torrent.infoHash,
+          });
         });
-      });
+      } catch (error) {
+        this.logService.error(
+          `❌ Webtorrent 解析文件失败，错误信息为: ${(error as Error).message}`,
+        );
+        throw new WebTorrentParseException((error as Error).message);
+      }
     });
   }
-
-  // filterTorrent(magnetFileDetails: MagnetFileDetails) {
-  //   const { torrentName } = magnetFileDetails;
-  //   const path = `/files/torrents/${torrentName}.torrent`;
-  //   const torrentData = fs.readFileSync(path);
-  //   const parsedTorrent = parseTorrent(torrentData);
-
-  //   console.log(parsedTorrent);
-  // }
 }
