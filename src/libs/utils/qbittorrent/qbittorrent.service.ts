@@ -1,6 +1,6 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { LogService } from '../../log/log.service';
+import { LogService } from '../../core/log/log.service';
 import axios, { AxiosInstance } from 'axios';
 import { QBLoginFailedException } from '../../exceptions/qb/QBLoginFailedException';
 import { QBaddTaskFailedException } from '../../exceptions/qb/QBaddTaskFailedException';
@@ -9,7 +9,7 @@ import {
   MagnetFile,
   MagnetFileDetails,
   QBTaskContent,
-} from '../../types/magnet/file';
+} from '../../modal/magnet/file';
 import * as path from 'path';
 import * as fs from 'fs';
 import FormData from 'form-data';
@@ -60,12 +60,15 @@ export class QbittorrentService implements OnModuleInit {
 
       if (response.headers['set-cookie']) {
         this.cookie = response.headers['set-cookie'][0];
-        this.logService.log('✅ qBittorrent 登录成功');
+        this.logService.log('[OK] qBittorrent 登录成功');
       } else {
-        this.logService.error('❌ qBittorrent 登录失败，未返回 Cookie');
+        this.logService.error('[ERROR] qBittorrent 登录失败，未返回 Cookie');
       }
     } catch (error) {
-      this.logService.error('❌ qBittorrent 连接失败, 请检查QB配置重启重试');
+      this.logService.error(
+        '[ERROR] qBittorrent 连接失败, 请检查QB配置重启重试',
+        (error as Error).stack,
+      );
       throw new QBLoginFailedException((error as Error).message);
     }
   }
@@ -84,15 +87,15 @@ export class QbittorrentService implements OnModuleInit {
       );
 
       if (response.status === 200) {
-        this.logService.log('✅ 已提交磁力链接');
+        this.logService.log('[OK] 已提交磁力链接');
       } else {
-        this.logService.error('❌ 磁力链接提交失败，格式可能有误');
+        this.logService.error('[ERROR] 磁力链接提交失败，格式可能有误');
         throw new QBaddTaskFailedException(
           'QB提交API没有返回200, 磁力链接格式可能不正确',
         );
       }
     } catch (error) {
-      this.logService.error('❌ QB提交API出错，提交失败');
+      this.logService.error('[ERROR] QB提交API出错，提交失败');
       throw new QBaddTaskFailedException((error as Error).message);
     }
   }
@@ -141,7 +144,7 @@ export class QbittorrentService implements OnModuleInit {
         console.log(response.data);
       }
     } catch (error) {
-      this.logService.error('❌ 获取QB任务失败');
+      this.logService.error('[ERROR] 获取QB任务失败', (error as Error).stack);
       throw new QBtaskInfoException((error as Error).message);
     }
   }
@@ -171,11 +174,14 @@ export class QbittorrentService implements OnModuleInit {
       if (response.status === 200) {
         return true;
       } else {
-        this.logService.error('❌ QB提交API出错，提交失败');
+        this.logService.error('[ERROR] QB提交API出错，提交失败');
         return false;
       }
     } catch (error) {
-      this.logService.error('[ERROR] 服务器内部错误，QB提交API失败');
+      this.logService.error(
+        '[ERROR] 服务器内部错误，QB提交API失败',
+        (error as Error).stack,
+      );
       throw new QBaddTaskFailedException((error as Error).message);
     }
   }
@@ -195,7 +201,10 @@ export class QbittorrentService implements OnModuleInit {
         return response.data as QBTaskContent[];
       }
     } catch (error) {
-      this.logService.error('❌ QB获取文件列表API出错，获取失败');
+      this.logService.error(
+        '[ERROR] QB获取文件列表API出错，获取失败',
+        (error as Error).stack,
+      );
       throw new QBaddTaskFailedException((error as Error).message);
     }
   }
@@ -238,12 +247,15 @@ export class QbittorrentService implements OnModuleInit {
         return true;
       } else {
         this.logService.error(
-          `❌ QB修改文件优先级失败，错误: ${response.status}`,
+          `[ERROR] QB修改文件优先级失败，错误: ${response.status}`,
         );
         return false;
       }
     } catch (error) {
-      this.logService.error('❌ QB修改文件优先级API出错，提交失败');
+      this.logService.error(
+        '[ERROR] QB修改文件优先级API出错，提交失败',
+        (error as Error).stack,
+      );
       throw new QBaddTaskFailedException((error as Error).message);
     }
   }
@@ -266,7 +278,7 @@ export class QbittorrentService implements OnModuleInit {
       }
     } catch (error) {
       this.logService.error(
-        `❌ QB恢复任务下载失败，错误信息: ${(error as Error).message}`,
+        `[ERROR] QB恢复任务下载失败，错误信息: ${(error as Error).message}`,
       );
       throw new QBresumeTaskException((error as Error).message);
     }
@@ -274,7 +286,7 @@ export class QbittorrentService implements OnModuleInit {
 
   private delay(ms: number) {
     return new Promise((resolve) => {
-      this.logService.log('等待QB生成任务.......');
+      this.logService.log('[INFO] 等待QB生成任务.......');
       setTimeout(resolve, ms);
     });
   }
