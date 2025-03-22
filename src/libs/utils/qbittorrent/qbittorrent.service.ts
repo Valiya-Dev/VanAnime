@@ -15,14 +15,19 @@ import * as fs from 'fs';
 import FormData from 'form-data';
 import * as process from 'node:process';
 import { QBresumeTaskException } from '../../exceptions/qb/QBresumeTaskException';
+import { QB_V5_ENDPOINTS, QB_V5_STATES } from '../../constants/qbittorrent/v5';
+import { QB_V4_ENDPOINTS, QB_V4_STATES } from '../../constants/qbittorrent/v4';
 
 @Injectable()
 export class QbittorrentService implements OnModuleInit {
   private qbHost: string | undefined = undefined;
   private username: string | undefined = undefined;
   private password: string | undefined = undefined;
+  private qbVersion: string | undefined = undefined;
   private axiosInstance: AxiosInstance;
   private cookie: string | null = null;
+  private QB_ENDPOINTS: typeof QB_V5_ENDPOINTS | typeof QB_V4_ENDPOINTS;
+  private QB_STATES: typeof QB_V5_STATES | typeof QB_V4_STATES;
 
   constructor(
     private readonly configService: ConfigService,
@@ -31,6 +36,7 @@ export class QbittorrentService implements OnModuleInit {
     this.qbHost = this.configService.get<string>('QB_HOST');
     this.username = this.configService.get<string>('QB_USERNAME');
     this.password = this.configService.get<string>('QB_PASSWORD');
+    this.qbVersion = this.configService.get<string>('QB_VERSION') || 'v5';
     this.axiosInstance = axios.create({
       baseURL: this.qbHost,
       withCredentials: true,
@@ -39,6 +45,7 @@ export class QbittorrentService implements OnModuleInit {
 
   async onModuleInit() {
     await this.QBlogin();
+    this.initQBConstants();
   }
 
   async QBlogin() {
@@ -157,7 +164,7 @@ export class QbittorrentService implements OnModuleInit {
     const form = new FormData();
 
     form.append('torrents', fs.createReadStream(torrentPath));
-    form.append('stopped', 'true');
+    form.append(this.qbVersion === 'v5' ? 'stopped' : 'paused', 'true');
 
     try {
       const response = await this.axiosInstance.post(
@@ -263,7 +270,7 @@ export class QbittorrentService implements OnModuleInit {
   private async resumeQBTask(hash: string) {
     try {
       const response = await this.axiosInstance.post(
-        '/api/v2/torrents/start',
+        `/api/v2/torrents/${this.QB_ENDPOINTS.start}`,
         { hashes: hash },
         {
           headers: {
@@ -289,5 +296,15 @@ export class QbittorrentService implements OnModuleInit {
       this.logService.log('[INFO] 等待QB生成任务.......');
       setTimeout(resolve, ms);
     });
+  }
+
+  private initQBConstants() {
+    if (this.qbVersion === 'v5') {
+      this.QB_ENDPOINTS = QB_V5_ENDPOINTS;
+      this.QB_STATES = QB_V5_STATES;
+    } else {
+      this.QB_ENDPOINTS = QB_V4_ENDPOINTS;
+      this.QB_STATES = QB_V4_STATES;
+    }
   }
 }
