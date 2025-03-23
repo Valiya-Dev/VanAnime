@@ -1,30 +1,17 @@
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import * as fs from 'fs';
 import * as path from 'path';
 import { LogService } from '../log/log.service';
 import * as process from 'node:process';
+import { STORE_PATH, TORRENT_FILE_PATH } from '../../constants/path/core';
 
 @Injectable()
 export class FileService implements OnApplicationBootstrap {
-  private readonly torrentFilePath: string;
-  private readonly storeJsonPath: string;
-
-  constructor(
-    private readonly configService: ConfigService,
-    private readonly logService: LogService,
-  ) {
-    this.torrentFilePath =
-      this.configService.get<string>('TORRENT_FILE_PATH') ||
-      '/src/files/torrents';
-    this.storeJsonPath = this.configService.get<string>('STORE_PATH')
-      ? `${this.configService.get<string>('STORE_PATH')}/store.json`
-      : '/src/files/store.json';
-  }
+  constructor(private readonly logService: LogService) {}
 
   onApplicationBootstrap() {
-    this.folderInit(this.torrentFilePath);
-    this.fileInit(this.storeJsonPath);
+    this.folderInit(TORRENT_FILE_PATH);
+    this.fileInit(`${STORE_PATH}/store.json`);
   }
 
   private folderInit(folderPath: string) {

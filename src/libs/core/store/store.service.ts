@@ -1,5 +1,4 @@
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { LogService } from '../log/log.service';
 import { StoreTaskRecord } from '../../modal/store/StoreTaskRecord';
 import { TaskStore } from './TaskStore';
@@ -7,6 +6,7 @@ import { FileService } from '../file/file.service';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as process from 'node:process';
+import { STORE_PATH } from '../../constants/path/core';
 
 @Injectable()
 export class StoreService implements OnApplicationBootstrap {
@@ -15,12 +15,9 @@ export class StoreService implements OnApplicationBootstrap {
 
   constructor(
     private readonly logService: LogService,
-    private readonly configService: ConfigService,
     private readonly fileService: FileService,
   ) {
-    this.storeJsonPath = this.configService.get<string>('STORE_PATH')
-      ? `${this.configService.get<string>('STORE_PATH')}/store.json`
-      : '/src/files/store.json';
+    this.storeJsonPath = `${STORE_PATH}/store.json`;
   }
 
   addNewRecord(name: string, magnet: string, infoHash: string, source: string) {
@@ -51,6 +48,10 @@ export class StoreService implements OnApplicationBootstrap {
 
   getTaskStore() {
     return this.taskStore;
+  }
+
+  findTask(infoHash?: string) {
+    return this.taskStore.findRecord(infoHash);
   }
 
   onApplicationBootstrap(): any {

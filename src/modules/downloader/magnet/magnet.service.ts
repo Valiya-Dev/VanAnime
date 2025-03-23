@@ -27,6 +27,15 @@ export class MagnetService {
   }
 
   async submitNewTask(data: MagnetSubmitDto) {
+    if (this.storeService.findTask(data.details.infoHash)) {
+      const response = new ResponseBase(
+        HttpStatusCode.Ok,
+        false,
+        '本任务已经存在于任务列表中',
+      );
+      return response;
+    }
+
     const result = await this.qbService.submitNewTask(data.details);
 
     if (result) {

@@ -7,6 +7,7 @@ import * as path from 'path';
 import { ConfigService } from '@nestjs/config';
 import { LogService } from '../../../core/log/log.service';
 import { WebTorrentParseException } from '../../../exceptions/magnet/WebTorrentParseException';
+import { TORRENT_FILE_PATH } from '../../../constants/path/core';
 
 @Injectable()
 export class TorrentTransformerService {
@@ -40,7 +41,7 @@ export class TorrentTransformerService {
           fs.writeFileSync(
             path.join(
               process.cwd(),
-              `${this.configService.get<string>('TORRENT_FILE_PATH')}/${torrent.name}.torrent`,
+              `${TORRENT_FILE_PATH}/${torrent.name}.torrent`,
             ),
             torrent.torrentFile,
           );

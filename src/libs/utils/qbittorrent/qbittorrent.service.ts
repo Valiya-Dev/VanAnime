@@ -17,6 +17,7 @@ import * as process from 'node:process';
 import { QBresumeTaskException } from '../../exceptions/qb/QBresumeTaskException';
 import { QB_V5_ENDPOINTS, QB_V5_STATES } from '../../constants/qbittorrent/v5';
 import { QB_V4_ENDPOINTS, QB_V4_STATES } from '../../constants/qbittorrent/v4';
+import { TORRENT_FILE_PATH } from '../../constants/path/core';
 
 @Injectable()
 export class QbittorrentService implements OnModuleInit {
@@ -159,7 +160,7 @@ export class QbittorrentService implements OnModuleInit {
   private async addTorrent(torrentName: string) {
     const torrentPath = path.join(
       process.cwd(),
-      `${this.configService.get<string>('TORRENT_FILE_PATH')}/${torrentName}.torrent`,
+      `${TORRENT_FILE_PATH}/${torrentName}.torrent`,
     );
     const form = new FormData();
 

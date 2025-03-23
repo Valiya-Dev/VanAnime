@@ -1,9 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ResponseBase {
-  constructor(statusCode: number, success: boolean) {
+  constructor(statusCode: number, success: boolean, message?: string) {
     this.statusCode = statusCode;
     this.success = success;
+    this.message = message;
   }
 
   @ApiProperty({ description: 'Response status code' })
@@ -13,5 +14,5 @@ export class ResponseBase {
   readonly success: boolean;
 
   @ApiProperty({ description: 'Response message' })
-  message: string;
+  message: string | undefined;
 }
