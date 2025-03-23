@@ -44,6 +44,7 @@ export class MagnetService {
         data.originMagnet,
         data.details.infoHash,
         data.source,
+        data.details.filesList,
       );
     }
 

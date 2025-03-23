@@ -7,6 +7,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as process from 'node:process';
 import { STORE_PATH } from '../../constants/path/core';
+import { MagnetFile } from '../../modal/magnet/file';
 
 @Injectable()
 export class StoreService implements OnApplicationBootstrap {
@@ -20,14 +21,22 @@ export class StoreService implements OnApplicationBootstrap {
     this.storeJsonPath = `${STORE_PATH}/store.json`;
   }
 
-  addNewRecord(name: string, magnet: string, infoHash: string, source: string) {
+  addNewRecord(
+    name: string,
+    magnet: string,
+    infoHash: string,
+    source: string,
+    selectedContents: MagnetFile[],
+  ) {
     const newTaskRecord: StoreTaskRecord = {
       name,
       magnet,
       infoHash,
       source,
       isCompleted: false,
+      isDownloaded: false,
       addDate: Date.now(),
+      selectedContents,
     };
 
     this.taskStore.addNewRecord(newTaskRecord);
