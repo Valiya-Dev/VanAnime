@@ -1,8 +1,9 @@
 import { ResponseBase } from '../../../libs/dto/response-base.dto';
 import { ApiProperty } from '@nestjs/swagger';
+import { HttpStatusCode } from 'axios';
 
 export class QueryBangumiCheckDto extends ResponseBase {
-  constructor(statusCode: number, success: boolean, message: string) {
+  constructor(statusCode: HttpStatusCode, success: boolean, message: string) {
     super(statusCode, success);
     this.message = message;
   }

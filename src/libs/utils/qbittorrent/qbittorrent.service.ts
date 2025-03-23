@@ -100,13 +100,13 @@ export class QbittorrentService implements OnModuleInit {
   async submitNewTask(fileDetails: MagnetFileDetails) {
     const { filesList, torrentName, infoHash } = fileDetails;
     const addResult = await this.addTorrent(torrentName).then();
-    await this.dealy(3000);
+    await this.delay(3000);
 
     if (addResult) {
       const torrentContents = await this.getTorrentContents(infoHash);
 
       if (torrentContents) {
-        const changePrioResult = await this.changeContentPrio(
+        const changePrioResult = await this.changeContentPriority(
           infoHash,
           filesList,
           torrentContents,
@@ -174,7 +174,7 @@ export class QbittorrentService implements OnModuleInit {
         return false;
       }
     } catch (error) {
-      this.logService.error('❌ QB提交API出错，提交失败');
+      this.logService.error('[ERROR] 服务器内部错误，QB提交API失败');
       throw new QBaddTaskFailedException((error as Error).message);
     }
   }
@@ -199,7 +199,7 @@ export class QbittorrentService implements OnModuleInit {
     }
   }
 
-  private async changeContentPrio(
+  private async changeContentPriority(
     hash: string,
     filesList: MagnetFile[],
     torrentContents: QBTaskContent[],
@@ -271,7 +271,7 @@ export class QbittorrentService implements OnModuleInit {
     }
   }
 
-  private dealy(ms: number) {
+  private delay(ms: number) {
     return new Promise((resolve) => {
       this.logService.log('等待QB生成任务.......');
       setTimeout(resolve, ms);
