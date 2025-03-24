@@ -8,7 +8,7 @@ export class ResponseBase {
   }
 
   @ApiProperty({ description: 'Response status code' })
-  readonly statusCode: number;
+  readonly statusCode: HttpStatusCode;
 
   @ApiProperty({ description: 'Response status' })
   readonly success: boolean;

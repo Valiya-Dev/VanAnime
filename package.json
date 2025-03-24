@@ -5,6 +5,10 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
+  "engines": {
+    "npm": ">=10",
+    "node": ">=22.14.0"
+  },
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
@@ -14,6 +18,9 @@
     "debug": "nest start --debug --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
+    "fix": "npm run style-fix && npm run lint-fix",
+    "style-fix": "prettier \"src/**/*\" --write",
+    "lint-fix": "eslint src --ext .ts --fix",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -34,6 +41,7 @@
     "fuse.js": "^7.1.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
+    "webtorrent": "^2.5.19",
     "winston": "^3.17.0"
   },
   "devDependencies": {
@@ -48,6 +56,7 @@
     "@types/jest": "^29.5.14",
     "@types/node": "^22.10.7",
     "@types/supertest": "^6.0.2",
+    "@types/webtorrent": "^0.110.0",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.2",

@@ -28,6 +28,12 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         typeof exceptionResponse === 'string'
           ? exceptionResponse
           : (exceptionResponse as ExceptionResponseInterface).message;
+    } else if (exception instanceof Error) {
+      message = exception.message;
+    } else if (typeof exception === 'string') {
+      message = exception;
+    } else if (typeof exception === 'object') {
+      message = JSON.stringify(exception);
     }
 
     this.logger.error(
