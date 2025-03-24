@@ -30,11 +30,4 @@ import { StoreModule } from './libs/core/store/store.module';
   providers: [AppService, LogService],
   exports: [GlobalCacheModule, QbittorrentModule],
 })
-export class AppModule {
-  // async onModuleInit() {
-  //   // https://github.com/nestjs/docs.nestjs.com/issues/3093 如何动态import
-  //   const { default: WebTorrent } = await import('webtorrent');
-  //   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  //   const client = new WebTorrent();
-  // }
-}
+export class AppModule {}
