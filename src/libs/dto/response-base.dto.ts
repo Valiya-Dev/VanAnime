@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { HttpStatusCode } from 'axios';
 
 export class ResponseBase {
   constructor(statusCode: number, success: boolean, message?: string) {
