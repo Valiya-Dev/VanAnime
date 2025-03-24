@@ -10,6 +10,7 @@ import { WebTorrentParseException } from '../../../exceptions/magnet/WebTorrentP
 
 @Injectable()
 export class TorrentTransformerService {
+  // todo 目前针对dmhy开发所用track，将来是否会根据源区别动态载入tracker，需要进一步分析
   private readonly trackerList = [
     'udp://104.143.10.186:8000/announce',
     'http://tracker.openbittorrent.com:80/announce',

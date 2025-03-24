@@ -100,6 +100,7 @@ export class QbittorrentService implements OnModuleInit {
   async submitNewTask(fileDetails: MagnetFileDetails) {
     const { filesList, torrentName, infoHash } = fileDetails;
     const addResult = await this.addTorrent(torrentName).then();
+    // todo 考虑到实际服务器性能和意外情况，建议从硬等待改为短轮询
     await this.delay(3000);
 
     if (addResult) {
